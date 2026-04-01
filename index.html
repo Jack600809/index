@@ -91,7 +91,7 @@
 <body>
 
 <div class="header">
-    <h2>🛠 福山押仔訂購清單</h2>
+    <h2>🛠 福山押仔訂購系統</h2>
 </div>
 
 <div class="toolbar">
@@ -172,14 +172,14 @@
         { name: "4分橫", spec: "75cm", price: 430, type: "h" }, { name: "4分直", spec: "75cm", price: 530, type: "v" },
         { name: "鋼管4分橫", spec: "65cm", price: 480, type: "h" }, { name: "鋼管4分直", spec: "65cm", price: 580, type: "v" },
         { name: "鋼管4分橫", spec: "75cm", price: 640, type: "h" }, { name: "鋼管4分直", spec: "75cm", price: 680, type: "v" },
-        { name: "錏管5分橫◎", spec: "65cm", price: 1080, type: "h", isSpecial: true }, 
-        { name: "錏管5分直◎", spec: "65cm", price: 1180, type: "v", isSpecial: true },
-        { name: "鋼管5分橫", spec: "65cm", price: 1380, type: "h" }, { name: "鋼管5分直", spec: "65cm", price: 1480, type: "v" },
-        { name: "6分橫", spec: "65cm", price: 1780, type: "h" }, { name: "6分直", spec: "65cm", price: 1900, type: "v" },
-        { name: "7分橫", spec: "65cm", price: 2300, type: "h" }, { name: "7分直", spec: "65cm", price: 2500, type: "v" },
-        { name: "8分橫", spec: "65cm", price: 3400, type: "h" }, { name: "8分直", spec: "65cm", price: 3580, type: "v" },
-        { name: "10分橫", spec: "65cm", price: 4800, type: "h" }, { name: "10分直", spec: "65cm", price: 4960, type: "v" },
-        { name: "11分橫", spec: "65cm", price: 7500, type: "h" }, { name: "11分直", spec: "65cm", price: 7650, type: "v" }
+        { name: "錏管5分橫◎", spec: "", price: 1080, type: "h", isSpecial: true }, 
+        { name: "錏管5分直◎", spec: "", price: 1180, type: "v", isSpecial: true },
+        { name: "鋼管5分橫", spec: "", price: 1380, type: "h" }, { name: "鋼管5分直", spec: "", price: 1480, type: "v" },
+        { name: "6分橫", spec: "", price: 1780, type: "h" }, { name: "6分直", spec: "", price: 1900, type: "v" },
+        { name: "7分橫", spec: "", price: 2300, type: "h" }, { name: "7分直", spec: "", price: 2500, type: "v" },
+        { name: "8分橫", spec: "", price: 3400, type: "h" }, { name: "8分直", spec: "", price: 3580, type: "v" },
+        { name: "10分橫", spec: "", price: 4800, type: "h" }, { name: "10分直", spec: "", price: 4960, type: "v" },
+        { name: "11分橫", spec: "", price: 7500, type: "h" }, { name: "11分直", spec: "", price: 7650, type: "v" }
     ];
 
     let activeIndex = 0;
@@ -297,7 +297,8 @@
                 hasItems = true;
                 const sub = qty * p.price;
                 total += sub;
-                const tr = `<tr><td>${p.name} (${p.spec})</td><td>${qty}</td><td>${sub.toLocaleString()}</td></tr>`;
+                const specDisplay = p.spec ? " (" + p.spec + ")" : "";
+                const tr = `<tr><td>${p.name}${specDisplay}</td><td>${qty}</td><td>${sub.toLocaleString()}</td></tr>`;
                 captureBody.innerHTML += tr;
             }
         });
@@ -329,9 +330,33 @@
     }
 
     function downloadImage() {
+        const imgData = document.getElementById('result-img').src;
+        if (!imgData) return;
+        
+        // 嘗試使用新的 Web Share API (如果瀏覽器支援)
+        if (navigator.share) {
+             fetch(imgData)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], "訂單圖片.png", { type: "image/png" });
+                    navigator.share({
+                        files: [file],
+                        title: '福山押仔訂單',
+                        text: '這是我的訂購清單',
+                    }).catch(err => {
+                        // 如果分享失敗，回退到普通下載
+                        downloadFallback(imgData);
+                    });
+                });
+        } else {
+            downloadFallback(imgData);
+        }
+    }
+
+    function downloadFallback(imgData) {
         const link = document.createElement('a');
         link.download = '福山押仔訂單_' + new Date().getTime() + '.png';
-        link.href = document.getElementById('result-img').src;
+        link.href = imgData;
         link.click();
     }
 
