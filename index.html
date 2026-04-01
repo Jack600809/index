@@ -14,7 +14,6 @@
         .header { background: var(--primary); color: white; padding: 10px; text-align: center; position: sticky; top: 0; z-index: 100; }
         .header h2 { margin: 0; font-size: 1.6em; }
 
-        /* 工具列改為 Icon 按鈕設計 */
         .toolbar { 
             background: #ecf0f1; padding: 10px; display: flex; justify-content: space-around; 
             position: sticky; top: 52px; z-index: 95; border-bottom: 2px solid #ddd; 
@@ -26,16 +25,19 @@
             color: #7f8c8d; transition: all 0.2s;
         }
         .icon-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .icon-btn i { font-size: 1.2em; }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th { background: #eee; padding: 8px 5px; font-size: 1em; position: sticky; top: 110px; z-index: 90; border-bottom: 2px solid #ccc; }
         td { padding: 8px 4px; border-bottom: 1px solid #ddd; vertical-align: middle; }
         tr.hidden { display: none; }
+        
         tr.horizontal { background-color: var(--hori-bg); }
         tr.vertical { background-color: var(--vert-bg); }
 
         .prod-info { font-size: 1.4em; font-weight: 900; color: #000; line-height: 1.1; } 
+        /* 特規品名顏色 */
+        .prod-info.special-item { color: #8e44ad; } 
+        
         .spec-info { font-size: 0.95em; color: #444; font-weight: bold; } 
         .price-info { color: #d35400; font-weight: 900; font-size: 1.3em; } 
         
@@ -67,24 +69,13 @@
 </div>
 
 <div class="toolbar">
-    <!-- 顯示模式分組 -->
     <div class="btn-group">
-        <button id="showAllBtn" class="icon-btn active" onclick="setFilter(false)">
-            <span>👁️ 全部</span>
-        </button>
-        <button id="showSelectedBtn" class="icon-btn" onclick="setFilter(true)">
-            <span>🛒 僅選</span>
-        </button>
+        <button id="showAllBtn" class="icon-btn active" onclick="setFilter(false)"><span>👁️ 全部</span></button>
+        <button id="showSelectedBtn" class="icon-btn" onclick="setFilter(true)"><span>🛒 僅選</span></button>
     </div>
-
-    <!-- 價格模式分組 -->
     <div class="btn-group">
-        <button id="priceOriginalBtn" class="icon-btn active" onclick="setPriceMode(false)">
-            <span>💵 原價</span>
-        </button>
-        <button id="priceDiscountBtn" class="icon-btn" onclick="setPriceMode(true)">
-            <span>🤝 經銷</span>
-        </button>
+        <button id="priceOriginalBtn" class="icon-btn active" onclick="setPriceMode(false)"><span>💵 原價</span></button>
+        <button id="priceDiscountBtn" class="icon-btn" onclick="setPriceMode(true)"><span>🤝 經銷</span></button>
     </div>
 </div>
 
@@ -128,13 +119,14 @@
         { name: "4分橫", spec: "75cm", price: 430, type: "h" }, { name: "4分直", spec: "75cm", price: 530, type: "v" },
         { name: "鋼管4分橫", spec: "65cm", price: 480, type: "h" }, { name: "鋼管4分直", spec: "65cm", price: 580, type: "v" },
         { name: "鋼管4分橫", spec: "75cm", price: 640, type: "h" }, { name: "鋼管4分直", spec: "75cm", price: 680, type: "v" },
-        { name: "錏管5分橫◎", spec: "特規", price: 1080, type: "h" }, { name: "錏管5分直◎", spec: "特規", price: 1180, type: "v" },
-        { name: "鋼管5分橫", spec: "一般", price: 1380, type: "h" }, { name: "鋼管5分直", spec: "一般", price: 1480, type: "v" },
-        { name: "6分橫", spec: "一般", price: 1780, type: "h" }, { name: "6分直", spec: "一般", price: 1900, type: "v" },
-        { name: "7分橫", spec: "一般", price: 2300, type: "h" }, { name: "7分直", spec: "一般", price: 2500, type: "v" },
-        { name: "8分橫", spec: "一般", price: 3400, type: "h" }, { name: "8分直", spec: "一般", price: 3580, type: "v" },
-        { name: "10分橫", spec: "一般", price: 4800, type: "h" }, { name: "10分直", spec: "一般", price: 4960, type: "v" },
-        { name: "11分橫", spec: "一般", price: 7500, type: "h" }, { name: "11分直", spec: "一般", price: 7650, type: "v" }
+        { name: "錏管5分橫◎", spec: "65cm", price: 1080, type: "h", isSpecial: true }, 
+        { name: "錏管5分直◎", spec: "65cm", price: 1180, type: "v", isSpecial: true },
+        { name: "鋼管5分橫", spec: "65cm", price: 1380, type: "h" }, { name: "鋼管5分直", spec: "65cm", price: 1480, type: "v" },
+        { name: "6分橫", spec: "65cm", price: 1780, type: "h" }, { name: "6分直", spec: "65cm", price: 1900, type: "v" },
+        { name: "7分橫", spec: "65cm", price: 2300, type: "h" }, { name: "7分直", spec: "65cm", price: 2500, type: "v" },
+        { name: "8分橫", spec: "65cm", price: 3400, type: "h" }, { name: "8分直", spec: "65cm", price: 3580, type: "v" },
+        { name: "10分橫", spec: "65cm", price: 4800, type: "h" }, { name: "10分直", spec: "65cm", price: 4960, type: "v" },
+        { name: "11分橫", spec: "65cm", price: 7500, type: "h" }, { name: "11分直", spec: "65cm", price: 7650, type: "v" }
     ];
 
     let activeIndex = 0;
@@ -149,12 +141,14 @@
             const tr = document.createElement('tr');
             tr.id = 'row-' + i;
             tr.className = p.type === "h" ? "horizontal" : "vertical";
-            const tagText = p.type === "h" ? "橫" : "直";
-            const tagClass = p.type === "h" ? "tag-h" : "tag-v";
             
+            var nameClass = p.isSpecial ? "prod-info special-item" : "prod-info";
+            // 規格只留數值，不顯示文字
+            var specValue = p.spec;
+
             var rowContent = '<td>' +
-                             '<div class="prod-info">' + p.name + '<span class="type-tag ' + tagClass + '">' + tagText + '</span></div>' +
-                             '<div class="spec-info">' + p.spec + '</div>' +
+                             '<div class="' + nameClass + '">' + p.name + '</div>' + 
+                             '<div class="spec-info">' + specValue + '</div>' +
                              '</td>' +
                              '<td class="price-info">' + p.price + '</td>' +
                              '<td><div class="qty-box" id="qty-' + i + '" onclick="setActive(' + i + ')"></div></td>' +
@@ -185,7 +179,6 @@
         }
     }
 
-    // 新的過濾器切換邏輯
     function setFilter(onlySelected) {
         showOnlySelected = onlySelected;
         document.getElementById('showAllBtn').classList.toggle('active', !onlySelected);
@@ -193,12 +186,10 @@
         refreshDisplay();
     }
 
-    // 新的價格模式切換邏輯
     function setPriceMode(discount) {
         isDiscountMode = discount;
         document.getElementById('priceOriginalBtn').classList.toggle('active', !discount);
         document.getElementById('priceDiscountBtn').classList.toggle('active', discount);
-        
         const dLabel = document.getElementById('discount-label');
         const dDisp = document.getElementById('discount-display');
         dLabel.style.color = discount ? "#2ecc71" : "#aaa";
