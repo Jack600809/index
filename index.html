@@ -7,49 +7,88 @@
     <style>
         :root { --primary: #2c3e50; --accent: #e74c3c; --bg: #f0f2f5; --success: #27ae60; --hori-bg: #fffbe6; --vert-bg: #e6f7ff; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; overflow-x: hidden; }
-        .container { max-width: 600px; margin: 0 auto 400px auto; background: white; min-height: 100vh; padding-bottom: 20px; }
+        
+        .container { max-width: 600px; margin: 0 auto; background: white; min-height: 100vh; padding-bottom: 80px; transition: padding-bottom 0.3s; }
+        .container.keyboard-open { padding-bottom: 400px; }
+
         .header { background: var(--primary); color: white; padding: 10px; text-align: center; position: sticky; top: 0; z-index: 100; }
         .header h2 { margin: 0; font-size: 1.6em; }
-        .toolbar { background: #ecf0f1; padding: 8px; display: flex; justify-content: space-around; position: sticky; top: 52px; z-index: 95; border-bottom: 2px solid #ddd; }
-        .tool-btn { padding: 8px 12px; border-radius: 20px; border: 2px solid #bdc3c7; background: white; font-size: 15px; font-weight: bold; cursor: pointer; }
-        .tool-btn.active { background: var(--success); color: white; border-color: var(--success); }
+
+        /* 工具列改為 Icon 按鈕設計 */
+        .toolbar { 
+            background: #ecf0f1; padding: 10px; display: flex; justify-content: space-around; 
+            position: sticky; top: 52px; z-index: 95; border-bottom: 2px solid #ddd; 
+        }
+        .btn-group { display: flex; background: #ddd; padding: 3px; border-radius: 10px; gap: 2px; }
+        .icon-btn { 
+            padding: 8px 15px; border-radius: 8px; border: none; background: transparent; 
+            font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+            color: #7f8c8d; transition: all 0.2s;
+        }
+        .icon-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .icon-btn i { font-size: 1.2em; }
+
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { background: #eee; padding: 8px 5px; font-size: 1em; position: sticky; top: 102px; z-index: 90; border-bottom: 2px solid #ccc; }
+        th { background: #eee; padding: 8px 5px; font-size: 1em; position: sticky; top: 110px; z-index: 90; border-bottom: 2px solid #ccc; }
         td { padding: 8px 4px; border-bottom: 1px solid #ddd; vertical-align: middle; }
         tr.hidden { display: none; }
         tr.horizontal { background-color: var(--hori-bg); }
         tr.vertical { background-color: var(--vert-bg); }
-        .type-tag { font-size: 0.7em; padding: 2px 4px; border-radius: 3px; margin-left: 5px; vertical-align: middle; color: white; font-weight: bold; }
-        .tag-h { background-color: #f39c12; }
-        .tag-v { background-color: #3498db; }
+
         .prod-info { font-size: 1.4em; font-weight: 900; color: #000; line-height: 1.1; } 
         .spec-info { font-size: 0.95em; color: #444; font-weight: bold; } 
         .price-info { color: #d35400; font-weight: 900; font-size: 1.3em; } 
+        
         .qty-box { width: 95%; height: 50px; border: 3px solid #3498db; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; background: #fff; margin: auto; cursor: pointer; } 
         .qty-box.active { background: #fff9c4 !important; border-color: #e74c3c; box-shadow: 0 0 10px rgba(231,76,60,0.4); }
         .subtotal { text-align: right; padding-right: 8px; font-weight: bold; color: var(--primary); font-size: 1.2em; }
-        .footer-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #d2d6dc; box-shadow: 0 -3px 15px rgba(0,0,0,0.3); z-index: 1000; }
-        .total-bar { background: var(--primary); color: white; padding: 10px 15px; }
-        .total-row { display: flex; justify-content: space-between; align-items: center; margin: 3px 0; }
+
+        .footer-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #d2d6dc; box-shadow: 0 -3px 15px rgba(0,0,0,0.3); z-index: 1000; transition: transform 0.3s ease-in-out; }
+        .footer-panel.collapsed { transform: translateY(285px); } 
+
+        .total-bar { background: var(--primary); color: white; padding: 10px 15px; display: flex; flex-direction: column; cursor: pointer; position: relative; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin: 2px 0; }
         .total-label { font-size: 1.1em; }
         .total-amount { font-size: 1.7em; color: #f1c40f; font-weight: bold; } 
-        .discount-text { font-size: 1.3em; font-weight: bold; }
-        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 8px; background: #d2d6dc; }
-        .key { background: white; border: none; border-radius: 6px; height: 55px; font-size: 22px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 rgba(0,0,0,0.2); cursor: pointer; } 
+
+        .toggle-arrow { position: absolute; right: 15px; top: -15px; background: #d2d6dc; border-radius: 50% 50% 0 0; width: 40px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #333; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 8px; background: #d2d6dc; height: 270px; }
+        .key { background: white; border: none; border-radius: 6px; height: 60px; font-size: 22px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 rgba(0,0,0,0.2); cursor: pointer; } 
         .key:active { background: #bdc3c7; transform: translateY(2px); }
         .key.orange { background: #f39c12; color: white; }
         .key.gray { background: #7f8c8d; color: white; }
     </style>
 </head>
 <body>
+
 <div class="header">
     <h2>🛠 福山押仔訂購清單</h2>
 </div>
+
 <div class="toolbar">
-    <button id="filterBtn" class="tool-btn" onclick="toggleFilter()">全部顯示</button>
-    <button id="priceModeBtn" class="tool-btn" onclick="togglePriceMode()">價格模式：原價</button>
+    <!-- 顯示模式分組 -->
+    <div class="btn-group">
+        <button id="showAllBtn" class="icon-btn active" onclick="setFilter(false)">
+            <span>👁️ 全部</span>
+        </button>
+        <button id="showSelectedBtn" class="icon-btn" onclick="setFilter(true)">
+            <span>🛒 僅選</span>
+        </button>
+    </div>
+
+    <!-- 價格模式分組 -->
+    <div class="btn-group">
+        <button id="priceOriginalBtn" class="icon-btn active" onclick="setPriceMode(false)">
+            <span>💵 原價</span>
+        </button>
+        <button id="priceDiscountBtn" class="icon-btn" onclick="setPriceMode(true)">
+            <span>🤝 經銷</span>
+        </button>
+    </div>
 </div>
-<div class="container">
+
+<div class="container" id="mainContainer">
     <table id="orderTable">
         <thead>
             <tr>
@@ -62,15 +101,17 @@
         <tbody id="order-body"></tbody>
     </table>
 </div>
-<div class="footer-panel">
-    <div class="total-bar">
+
+<div class="footer-panel" id="footerPanel">
+    <div class="toggle-arrow" onclick="toggleKeyboard()">⌨️</div>
+    <div class="total-bar" onclick="toggleKeyboard()">
         <div class="total-row">
             <span class="total-label">總計(原價):</span>
             <span class="total-amount">NT$ <span id="grand-total">0</span></span>
         </div>
         <div class="total-row">
             <span id="discount-label" style="color:#aaa; font-size:1em;">經銷價(九折):</span>
-            <span class="discount-text" id="discount-display" style="color:#aaa;">--</span>
+            <span class="discount-text" id="discount-display" style="color:#aaa; font-weight:bold; font-size:1.3em;">--</span>
         </div>
     </div>
     <div class="keypad">
@@ -80,6 +121,7 @@
         <button class="key" onclick="press(0)" style="grid-column: span 2;">0</button><button class="key gray" onclick="resetAll()" style="grid-column: span 2; font-size: 16px;">全部重設</button>
     </div>
 </div>
+
 <script>
     const products = [
         { name: "4分橫", spec: "65cm", price: 390, type: "h" }, { name: "4分直", spec: "65cm", price: 470, type: "v" },
@@ -94,9 +136,12 @@
         { name: "10分橫", spec: "一般", price: 4800, type: "h" }, { name: "10分直", spec: "一般", price: 4960, type: "v" },
         { name: "11分橫", spec: "一般", price: 7500, type: "h" }, { name: "11分直", spec: "一般", price: 7650, type: "v" }
     ];
+
     let activeIndex = 0;
     let showOnlySelected = false;
     let isDiscountMode = false;
+    let isKeyboardOpen = true;
+
     function init() {
         const tbody = document.getElementById('order-body');
         tbody.innerHTML = '';
@@ -114,35 +159,53 @@
                              '<td class="price-info">' + p.price + '</td>' +
                              '<td><div class="qty-box" id="qty-' + i + '" onclick="setActive(' + i + ')"></div></td>' +
                              '<td class="subtotal" id="sub-' + i + '">0</td>';
-            
             tr.innerHTML = rowContent;
             tbody.appendChild(tr);
         });
         setActive(0);
     }
+
     function setActive(index) {
         document.querySelectorAll('.qty-box').forEach(b => b.classList.remove('active'));
         activeIndex = index;
         document.getElementById('qty-' + index).classList.add('active');
+        if (!isKeyboardOpen) toggleKeyboard();
     }
-    function toggleFilter() {
-        showOnlySelected = !showOnlySelected;
-        const btn = document.getElementById('filterBtn');
-        btn.innerText = showOnlySelected ? "僅選項目" : "全部顯示";
-        btn.classList.toggle('active', showOnlySelected);
+
+    function toggleKeyboard() {
+        const panel = document.getElementById('footerPanel');
+        const container = document.getElementById('mainContainer');
+        isKeyboardOpen = !isKeyboardOpen;
+        if (isKeyboardOpen) {
+            panel.classList.remove('collapsed');
+            container.classList.add('keyboard-open');
+        } else {
+            panel.classList.add('collapsed');
+            container.classList.remove('keyboard-open');
+        }
+    }
+
+    // 新的過濾器切換邏輯
+    function setFilter(onlySelected) {
+        showOnlySelected = onlySelected;
+        document.getElementById('showAllBtn').classList.toggle('active', !onlySelected);
+        document.getElementById('showSelectedBtn').classList.toggle('active', onlySelected);
         refreshDisplay();
     }
-    function togglePriceMode() {
-        isDiscountMode = !isDiscountMode;
-        const btn = document.getElementById('priceModeBtn');
+
+    // 新的價格模式切換邏輯
+    function setPriceMode(discount) {
+        isDiscountMode = discount;
+        document.getElementById('priceOriginalBtn').classList.toggle('active', !discount);
+        document.getElementById('priceDiscountBtn').classList.toggle('active', discount);
+        
         const dLabel = document.getElementById('discount-label');
         const dDisp = document.getElementById('discount-display');
-        btn.innerText = isDiscountMode ? "價格模式：經銷價" : "價格模式：原價";
-        btn.classList.toggle('active', isDiscountMode);
-        dLabel.style.color = isDiscountMode ? "#2ecc71" : "#aaa";
-        dDisp.style.color = isDiscountMode ? "#f1c40f" : "#aaa";
+        dLabel.style.color = discount ? "#2ecc71" : "#aaa";
+        dDisp.style.color = discount ? "#f1c40f" : "#aaa";
         calculate();
     }
+
     function refreshDisplay() {
         products.forEach((_, i) => {
             const row = document.getElementById('row-' + i);
@@ -151,6 +214,7 @@
             row.classList.toggle('hidden', showOnlySelected && qty === 0);
         });
     }
+
     function press(key) {
         const box = document.getElementById('qty-' + activeIndex);
         if (typeof key === 'number') {
@@ -167,6 +231,7 @@
         }
         calculate();
     }
+
     function calculate() {
         let rawTotal = 0;
         products.forEach((p, i) => {
@@ -181,6 +246,7 @@
         document.getElementById('discount-display').innerText = isDiscountMode ? "NT$ " + discountTotal.toLocaleString() : "--";
         refreshDisplay();
     }
+
     function resetAll() {
         if(confirm("確定要全部重設嗎？")) {
             products.forEach((_, i) => document.getElementById('qty-' + i).innerText = "");
