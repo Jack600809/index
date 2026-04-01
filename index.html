@@ -62,7 +62,7 @@
         .key.gray { background: #7f8c8d; color: white; }
         .key.send { background: #27ae60; color: white; }
 
-        /* 截圖區域 */
+        /* 截圖區域樣式 (隱藏在背景) */
         #capture-area { 
             position: absolute; left: -9999px; width: 500px; background: white; padding: 25px; 
             border: 1px solid #eee; text-align: center; 
@@ -76,12 +76,16 @@
         .line-info { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ccc; }
         .qr-code { width: 160px; height: 160px; margin: 10px auto; display: block; }
         
+        /* 彈窗樣式 */
         #result-modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column;
         }
-        #result-modal img { max-width: 90%; max-height: 80%; border: 5px solid white; border-radius: 5px; }
-        #result-modal button { margin-top: 20px; padding: 12px 40px; font-size: 18px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #result-modal img { max-width: 90%; max-height: 70%; border: 5px solid white; border-radius: 5px; }
+        .modal-btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btn { padding: 12px 25px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-save { background: #27ae60; }
+        .btn-close { background: #e74c3c; }
     </style>
 </head>
 <body>
@@ -154,9 +158,12 @@
 </div>
 
 <div id="result-modal">
-    <div style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: bold;">✅ 訂單已生成，長按圖片儲存</div>
+    <div style="color: white; margin-bottom: 10px; font-size: 18px; font-weight: bold; text-align: center;">訂單已生成！<br>請長按圖片選「儲存」或「分享」</div>
     <img id="result-img" src="" alt="訂單圖片">
-    <button onclick="document.getElementById('result-modal').style.display='none'">返回修改</button>
+    <div class="modal-btn-group">
+        <button id="downloadBtn" class="modal-btn btn-save" onclick="downloadImage()">📥 下載/儲存</button>
+        <button class="modal-btn btn-close" onclick="document.getElementById('result-modal').style.display='none'">返回修改</button>
+    </div>
 </div>
 
 <script>
@@ -296,7 +303,7 @@
         });
 
         if (!hasItems) {
-            alert("請先輸入數量！");
+            alert("目前清單為空，請輸入數量！");
             return;
         }
 
@@ -313,11 +320,19 @@
         }
 
         const area = document.getElementById('capture-area');
+        // 渲染圖片
         const canvas = await html2canvas(area, { useCORS: true, logging: false, scale: 2 });
         const imgData = canvas.toDataURL('image/png');
         
         document.getElementById('result-img').src = imgData;
         document.getElementById('result-modal').style.display = 'flex';
+    }
+
+    function downloadImage() {
+        const link = document.createElement('a');
+        link.download = '福山押仔訂單_' + new Date().getTime() + '.png';
+        link.href = document.getElementById('result-img').src;
+        link.click();
     }
 
     window.onload = init;
