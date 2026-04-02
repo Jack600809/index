@@ -19,24 +19,19 @@
             height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* 系統進入前提示遮罩 - 修正為圓形提示且不標註方位 */
+        /* 系統進入前提示遮罩 */
         #entry-alert {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: white; padding: 25px; text-align: center;
         }
-        .alert-card { background: white; color: #333; padding: 30px; border-radius: 20px; max-width: 400px; width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .alert-card { background: white; color: #333; padding: 30px; border-radius: 20px; max-width: 400px; width: 95%; }
         .alert-card h2 { margin-top: 0; color: var(--primary); font-size: 24px; font-weight: 900; }
         .alert-content { text-align: left; background: #e7f3ff; padding: 20px; border-radius: 12px; margin: 20px 0; line-height: 1.8; border: 2px solid #bde0ff; font-size: 16px; }
-        .alert-content b { color: #0056b3; }
-        .enter-btn { 
-            width: 100%; padding: 16px; background: var(--primary); color: white; border: none; 
-            border-radius: 12px; font-size: 1.2em; font-weight: 900; cursor: pointer;
-        }
+        .enter-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.2em; font-weight: 900; cursor: pointer; }
 
         .fixed-top { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #fff; border-bottom: 1px solid #dee2e6; }
-        
         .browser-tip {
             background: #fff3cd; text-align: center; padding: 6px 0;
             font-size: 15px; font-weight: 900; border-bottom: 1px solid #ffeeba;
@@ -73,13 +68,12 @@
         .prod-info { font-size: 2.0em; font-weight: 900; color: #000; line-height: 1.1; } 
         .prod-info.special-item { color: #8e44ad !important; }
         .spec-info { font-size: 1.2em; color: #333; font-weight: 900; } 
-        .qty-box { 
-            width: 95%; height: 60px; border: 3px solid #dee2e6; border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 36px; font-weight: 900; background: #fff; margin: auto; 
-        } 
+        .qty-box { width: 95%; height: 60px; border: 3px solid #dee2e6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; background: #fff; margin: auto; } 
         .qty-box.active { border-color: #e74c3c; background: #fff9c4 !important; }
         .subtotal { text-align: right; padding-right: 10px; font-weight: 900; color: var(--primary); font-size: 1.5em; }
+        
+        /* 核心修正：僅看選中的項目隱藏邏輯 */
+        tr.filtered-out { display: none !important; }
 
         .footer-panel { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1100; background: #d2d6dc; transition: transform 0.3s; }
         .footer-panel.collapsed { transform: translateY(300px); } 
@@ -99,11 +93,9 @@
         .order-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
         .order-table th { border-bottom: 4px solid #000; padding: 15px 5px; font-size: 28px; font-weight: 900; text-align: left; }
         .order-table td { border-bottom: 1px solid #ddd; font-size: 30px; font-weight: 800; padding: 25px 5px; }
-        
         .sum-box { margin-top: 40px; border-top: 5px solid #000; padding-top: 25px; text-align: right; }
         .sum-line { font-size: 32px; font-weight: 800; color: #666; margin-bottom: 10px; }
         .sum-final { font-size: 48px; font-weight: 900; color: #c0392b; }
-        
         .qr-section { margin-top: 40px; text-align: center; border-top: 2px dashed #ccc; padding-top: 30px; }
         .qr-img-fix { width: 20%; margin: 0 auto; display: block; }
 
@@ -187,7 +179,7 @@
 
 <script>
 const products = [{'name': '4分橫', 'spec': '65cm', 'price': 390, 'type': 'h'}, {'name': '4分直', 'spec': '65cm', 'price': 470, 'type': 'v'}, {'name': '4分橫', 'spec': '75cm', 'price': 430, 'type': 'h'}, {'name': '4分直', 'spec': '75cm', 'price': 530, 'type': 'v'}, {'name': '鋼管4分橫', 'spec': '65cm', 'price': 480, 'type': 'h'}, {'name': '鋼管4分直', 'spec': '65cm', 'price': 580, 'type': 'v'}, {'name': '鋼管4分橫', 'spec': '75cm', 'price': 640, 'type': 'h'}, {'name': '鋼管4分直', 'spec': '75cm', 'price': 680, 'type': 'v'}, {'name': '錏管5分橫◎', 'spec': '', 'price': 1080, 'isSpecial': true, 'type': 'h'}, {'name': '錏管5分直◎', 'spec': '', 'price': 1180, 'isSpecial': true, 'type': 'v'}, {'name': '鋼管5分橫', 'spec': '', 'price': 1380, 'type': 'h'}, {'name': '鋼管5分直', 'spec': '', 'price': 1480, 'type': 'v'}, {'name': '6分橫', 'spec': '', 'price': 1780, 'type': 'h'}, {'name': '6分直', 'spec': '', 'price': 1900, 'type': 'v'}, {'name': '7分橫', 'spec': '', 'price': 2300, 'type': 'h'}, {'name': '7分直', 'spec': '', 'price': 2500, 'type': 'v'}, {'name': '8分橫', 'spec': '', 'price': 3400, 'type': 'h'}, {'name': '8分直', 'spec': '', 'price': 3580, 'type': 'v'}, {'name': '10分橫', 'spec': '', 'price': 4800, 'type': 'h'}, {'name': '10分直', 'spec': '', 'price': 4960, 'type': 'v'}, {'name': '11分橫', 'spec': '', 'price': 7500, 'type': 'h'}, {'name': '11分直', 'spec': '', 'price': 7650, 'type': 'v'}];
-let activeIdx = 0, isDealer = false, showOnly = false;
+let activeIdx = 0, isDealerMode = false, isOnlySelected = false;
 
 function saveData() {
     const data = products.map((_, i) => document.getElementById('q-' + i).innerText);
@@ -244,16 +236,26 @@ function calculate() {
     products.forEach((p,i) => {
         const qty = parseInt(document.getElementById('q-'+i).innerText)||0;
         const sub = qty * p.price; document.getElementById('s-'+i).innerText = sub.toLocaleString(); total += sub;
+        
+        // 核心修正：根據篩選狀態決定是否顯示行
+        const row = document.getElementById('r-'+i);
+        if (isOnlySelected && qty === 0) {
+            row.classList.add('filtered-out');
+        } else {
+            row.classList.remove('filtered-out');
+        }
     });
+    
     document.getElementById('total-orig').innerText = total.toLocaleString();
-    if(isDealer) {
+    if(isDealerMode) {
         document.getElementById('dealer-row').style.display = 'flex';
         document.getElementById('total-deal').innerText = Math.round(total * 0.9).toLocaleString();
-    } else { document.getElementById('dealer-row').style.display = 'none'; }
-    products.forEach((_,i) => { const qty = parseInt(document.getElementById('q-'+i).innerText)||0; document.getElementById('r-'+i).style.display = (showOnly && qty===0) ? 'none' : 'table-row'; });
+    } else {
+        document.getElementById('dealer-row').style.display = 'none';
+    }
 }
 
-function setPriceMode(m) { isDealer = m; document.getElementById('btnNorm').classList.toggle('active', !m); document.getElementById('btnDeal').classList.toggle('active', m); calculate(); }
+function setPriceMode(m) { isDealerMode = m; document.getElementById('btnNorm').classList.toggle('active', !m); document.getElementById('btnDeal').classList.toggle('active', m); calculate(); }
 function setFilter(f) { isOnlySelected = f; document.getElementById('btnAll').classList.toggle('active', !f); document.getElementById('btnSel').classList.toggle('active', f); calculate(); }
 
 function resetAll() { 
@@ -274,7 +276,7 @@ async function output() {
     });
     if(!has) return alert('請先輸入數量');
     const sumArea = document.getElementById('c-summary');
-    if(isDealer) {
+    if(isDealerMode) {
         sumArea.innerHTML = `<div class="sum-line">原價總計: NT$ ${total.toLocaleString()}</div><div class="sum-final">經銷結帳: NT$ ${Math.round(total * 0.9).toLocaleString()}</div>`;
     } else { sumArea.innerHTML = `<div class="sum-final">應付總計: NT$ ${total.toLocaleString()}</div>`; }
     const canvas = await html2canvas(document.getElementById('capture-area'), {scale:3});
